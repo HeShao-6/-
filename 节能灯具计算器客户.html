@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculate How Much You Can Save</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .energy-calculator {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+ .image-container {
+      position: relative;
+      display: inline-block;
+    }
+    .main-image {
+      display: block;
+      max-width: 100%;
+      height: auto;
+    }
+    .logo-image {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 150px; /* 可根据需要调整大小 */
+      height: auto;
+    }
+        .calculator-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .calculator-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .calculator-icon {
+            width: 40px;
+            height: 40px;
+            background: #4CAF50;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .calculator-title h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .calculator-subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .calculator-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .calculator-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+
+        .calculator-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e1e8ed;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 24px;
+            height: 24px;
+            color: #3498db;
+        }
+
+        .card-title {
+            color: #2c3e50;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .card-subtitle {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 480px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #34495e;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .form-input.error, .form-select.error {
+            border-color: #e74c3c;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-secondary {
+            background: #ecf0f1;
+            color: #34495e;
+        }
+
+        .btn-secondary:hover {
+            background: #d5dbdb;
+        }
+
+        .results-container {
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .results-empty {
+            text-align: center;
+            color: #95a5a6;
+        }
+
+        .results-empty-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 15px;
+            color: #bdc3c7;
+        }
+
+        .results-content {
+            display: none;
+        }
+
+        .results-content.show {
+            display: block;
+        }
+
+        .result-section {
+            margin-bottom: 25px;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .power-comparison {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-left: 4px solid #2196F3;
+        }
+
+        .cost-savings {
+            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+            border-left: 4px solid #4CAF50;
+        }
+
+        .environmental-impact {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            border-left: 4px solid #FF9800;
+        }
+
+        .result-title {
+            color: #2c3e50;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .power-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .power-item {
+            text-align: center;
+        }
+
+        .power-label {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .power-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .power-old {
+            color: #e74c3c;
+        }
+
+        .power-new {
+            color: #27ae60;
+        }
+
+        .power-saved {
+            grid-column: 1 / -1;
+            padding-top: 15px;
+            border-top: 2px solid rgba(52, 152, 219, 0.2);
+        }
+
+        .power-saved .power-value {
+            color: #27ae60;
+            font-size: 1.5rem;
+        }
+
+        .savings-list {
+            list-style: none;
+        }
+
+        .savings-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(76, 175, 80, 0.2);
+        }
+
+        .savings-item:last-child {
+            border-bottom: none;
+            padding-top: 15px;
+            border-top: 2px solid rgba(76, 175, 80, 0.3);
+            font-weight: 600;
+        }
+
+        .savings-label {
+            color: #2c3e50;
+        }
+
+        .savings-value {
+            color: #27ae60;
+            font-weight: 600;
+        }
+
+        .savings-item:last-child .savings-value {
+            font-size: 1.3rem;
+        }
+
+        .info-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e1e8ed;
+        }
+
+        .info-title {
+            color: #2c3e50;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        @media (max-width: 768px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .info-block h4 {
+            color: #34495e;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .info-block p, .info-block ul {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .info-block ul {
+            padding-left: 20px;
+        }
+
+        .info-block li {
+            margin-bottom: 5px;
+        }
+
+        /* 动画效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .results-content.show {
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 480px) {
+            .energy-calculator {
+                padding: 15px;
+            }
+            
+            .calculator-title h1 {
+                font-size: 2rem;
+            }
+            
+            .calculator-card {
+                padding: 20px;
+            }
+            
+            .power-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="energy-calculator">
+        <!-- 标题区域 -->
+        <div class="image-container">
+    <img src="https://yunpan.cdn.site.joinf.com/5152309090116776/1752471637323/Logo.png"" alt="Logo" class="logo-image">
+  </div>
+        <div class="calculator-header">
+            <div class="calculator-title">
+                <div class="calculator-icon">💡</div>
+                <h1>Calculate How Much You Can Save</h1>
+            </div>
+            <p class="calculator-subtitle">Calculate the energy and cost savings of switching to high-efficiency LED lighting from Infralumin</p>
+        </div>
+
+        <!-- 主要内容区域 -->
+        <div class="calculator-content">
+            <!-- 输入表单 -->
+            <div class="calculator-card">
+                <div class="card-header">
+                    <svg class="card-icon" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <div>
+                        <h2 class="card-title">Parameter Input</h2>
+                        <p class="card-subtitle">Please fill in the parameters and electricity cost information of your current lamps</p>
+                    </div>
+                </div>
+
+                <form id="calculatorForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="oldLuminousEfficacy">Original lamp light effect (LM/W)</label>
+                            <input type="number" id="oldLuminousEfficacy" class="form-input" placeholder="For example：80" min="1">
+                            <div class="error-message" id="oldLuminousEfficacyError"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="oldPower">Original lamp power (W)</label>
+                            <input type="number" id="oldPower" class="form-input" placeholder="For example：100" min="1">
+                            <div class="error-message" id="oldPowerError"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="newLuminousEfficacy">Infralumin luminaire lighting effeciency</label>
+                        <select id="newLuminousEfficacy" class="form-select">
+                            <option value="">Please select the light efficiency value</option>
+                            <option value="160">160 LM/W</option>
+                            <option value="170">170 LM/W</option>
+                            <option value="180">180 LM/W</option>
+                        </select>
+                        <div class="error-message" id="newLuminousEfficacyError"></div>
+                    </div>
+                     
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="electricityRate">Electricity price (USD/kWh)</label>
+                            <input type="number" id="electricityRate" class="form-input" placeholder="For example：1.5" step="0.01" min="0">
+                            <div class="error-message" id="electricityRateError"></div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="lightCount">Number of lamps (Pcs)</label>
+                            <input type="number" id="lightCount" class="form-input" placeholder="For example：50" min="1">
+                            <div class="error-message" id="lightCountError"></div>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="submit" class="btn btn-primary">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
+                            </svg>
+                            Calculate energy saving effect
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 计算结果 -->
+            <div class="calculator-card">
+                <div class="card-header">
+                    <svg class="card-icon" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"/>
+                    </svg>
+                    <div>
+                        <h2 class="card-title">Calculation results</h2>
+                        <p class="card-subtitle">Energy saving effect and cost saving analysis</p>
+                    </div>
+                </div>
+
+                <div class="results-container">
+                    <div class="results-empty" id="resultsEmpty">
+                        <svg class="results-empty-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                        <p>Please fill in the parameters on the left and click the Calculate button</p>
+                    </div>
+
+                    <div class="results-content" id="resultsContent">
+                        <!-- 功率对比 -->
+                        <div class="result-section power-comparison">
+                            <h3 class="result-title">Power comparison</h3>
+                            <div class="power-grid">
+                                <div class="power-item">
+                                    <div class="power-label">Original lamp power</div>
+                                    <div class="power-value power-old" id="oldPowerResult">-</div>
+                                </div>
+                                <div class="power-item">
+                                    <div class="power-label">New lamp power</div>
+                                    <div class="power-value power-new" id="newPowerResult">-</div>
+                                </div>
+                                <div class="power-item power-saved">
+                                    <div class="power-label">Power saving for individual lamps</div>
+                                    <div class="power-value" id="powerSavedResult">-</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 成本节省 -->
+                        <div class="result-section cost-savings">
+                            <h3 class="result-title">Cost savings</h3>
+                            <ul class="savings-list">
+                                <li class="savings-item">
+                                    <span class="savings-label">Hourly savings</span>
+                                    <span class="savings-value" id="hourlySavings">-</span>
+                                </li>
+                                <li class="savings-item">
+                                    <span class="savings-label">Daily savings</span>
+                                    <span class="savings-value" id="dailySavings">-</span>
+                                </li>
+                                <li class="savings-item">
+                                    <span class="savings-label">Monthly savings</span>
+                                    <span class="savings-value" id="monthlySavings">-</span>
+                                </li>
+                                <li class="savings-item">
+                                    <span class="savings-label">Annual savings</span>
+                                    <span class="savings-value" id="yearlySavings">-</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- 环保效益 -->
+                        <div class="result-section environmental-impact">
+                            <h3 class="result-title">Environmental benefits</h3>
+                            <p id="environmentalBenefit">-</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 说明信息 -->
+        <div class="info-section">
+            <h3 class="info-title">Calculation instructions</h3>
+            <div class="info-grid">
+                <div class="info-block">
+                    <h4>Calculation formula</h4>
+                    <p>New lamp power = (Original lamp light effect × Original lamp power) ÷ New lighting effects</p>
+                    <p>Save electricity bills per hour = (Original power - New Power) × Electricity price × Number of lamps ÷ 1000</p>
+                </div>
+                <div class="info-block">
+                    <h4>Instructions</h4>
+                    <ul>
+                        <li>Luminous efficiency unit: Lumen/Watt (LM/W)</li>
+                        <li>Power unit: Watt (W)</li>
+                        <li>Electricity fee unit: USD/kWh </li>
+                        <li>Calculations based on 8 hours of use per day</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 表单验证和计算逻辑
+        document.getElementById('calculatorForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            calculateSavings();
+        });
+
+        function validateForm() {
+            const fields = [
+                { id: 'oldLuminousEfficacy', name: '原灯具光效', min: 1 },
+                { id: 'oldPower', name: '原灯具功率', min: 1 },
+                { id: 'newLuminousEfficacy', name: '公司灯具光效', isSelect: true },
+                { id: 'electricityRate', name: '电费单价', min: 0 },
+                { id: 'lightCount', name: '灯具数量', min: 1 }
+            ];
+
+            let isValid = true;
+
+            fields.forEach(field => {
+                const element = document.getElementById(field.id);
+                const errorElement = document.getElementById(field.id + 'Error');
+                const value = field.isSelect ? element.value : parseFloat(element.value);
+
+                // 清除之前的错误状态
+                element.classList.remove('error');
+                errorElement.textContent = '';
+
+                // 验证
+                if (field.isSelect) {
+                    if (!value) {
+                        showError(element, errorElement, `请选择${field.name}`);
+                        isValid = false;
+                    }
+                } else {
+                    if (isNaN(value) || value < field.min) {
+                        showError(element, errorElement, `请输入有效的${field.name}值`);
+                        isValid = false;
+                    }
+                }
+            });
+
+            return isValid;
+        }
+
+        function showError(element, errorElement, message) {
+            element.classList.add('error');
+            errorElement.textContent = message;
+        }
+
+        function calculateSavings() {
+            if (!validateForm()) return;
+
+            // 获取输入值
+            const oldLuminousEfficacy = parseFloat(document.getElementById('oldLuminousEfficacy').value);
+            const oldPower = parseFloat(document.getElementById('oldPower').value);
+            const newLuminousEfficacy = parseFloat(document.getElementById('newLuminousEfficacy').value);
+            const electricityRate = parseFloat(document.getElementById('electricityRate').value);
+            const lightCount = parseInt(document.getElementById('lightCount').value);
+
+            // 计算新灯具功率
+            const newPower = (oldLuminousEfficacy * oldPower) / newLuminousEfficacy;
+            
+            // 计算功率节省
+            const powerSaved = oldPower - newPower;
+            
+            // 计算每小时节省的电费
+            const hourlySavings = (powerSaved * electricityRate * lightCount) / 1000;
+
+            // 计算其他时间段的节省
+            const dailySavings = hourlySavings * 24 / 3;
+            const monthlySavings = dailySavings * 30 / 3;
+            const yearlySavings = dailySavings * 365 / 3;
+
+            // 计算环保效益（碳排放减少量）
+            const carbonReduction = (powerSaved * lightCount * 24 * 365 * 0.5968) / 1000000 / 3;
+
+            // 显示结果
+            displayResults({
+                oldPower: oldPower,
+                newPower: newPower,
+                powerSaved: powerSaved,
+                hourlySavings: hourlySavings,
+                dailySavings: dailySavings,
+                monthlySavings: monthlySavings,
+                yearlySavings: yearlySavings,
+                carbonReduction: carbonReduction
+            });
+        }
+
+        function displayResults(results) {
+            // 隐藏空状态，显示结果
+            document.getElementById('resultsEmpty').style.display = 'none';
+            document.getElementById('resultsContent').classList.add('show');
+
+            // 更新功率对比
+            document.getElementById('oldPowerResult').textContent = results.oldPower.toFixed(0) + 'W';
+            document.getElementById('newPowerResult').textContent = results.newPower.toFixed(2) + 'W';
+            document.getElementById('powerSavedResult').textContent = results.powerSaved.toFixed(2) + 'W';
+
+            // 更新成本节省
+            document.getElementById('hourlySavings').textContent = '$' + results.hourlySavings.toFixed(2);
+            document.getElementById('dailySavings').textContent = '$' + results.dailySavings.toFixed(1);
+            document.getElementById('monthlySavings').textContent = '$' + results.monthlySavings.toFixed(1);
+            document.getElementById('yearlySavings').textContent = '$' + results.yearlySavings.toFixed(1);
+
+            // 更新环保效益
+            document.getElementById('environmentalBenefit').textContent = 
+                `In addition to cost savings, you also contribute to environmental protection! Reduce carbon emissions by about ${results.carbonReduction.toFixed(2)} tonCO₂`;
+        }
+
+        function resetForm() {
+            // 重置表单
+            document.getElementById('calculatorForm').reset();
+            
+            // 清除错误状态
+            const inputs = document.querySelectorAll('.form-input, .form-select');
+            inputs.forEach(input => {
+                input.classList.remove('error');
+            });
+            
+            const errors = document.querySelectorAll('.error-message');
+            errors.forEach(error => {
+                error.textContent = '';
+            });
+
+            // 隐藏结果，显示空状态
+            document.getElementById('resultsContent').classList.remove('show');
+            document.getElementById('resultsEmpty').style.display = 'block';
+        }
+
+        // 输入时清除错误状态
+        document.querySelectorAll('.form-input, .form-select').forEach(element => {
+            element.addEventListener('input', function() {
+                this.classList.remove('error');
+                const errorElement = document.getElementById(this.id + 'Error');
+                if (errorElement) {
+                    errorElement.textContent = '';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
